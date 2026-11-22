@@ -11,6 +11,8 @@ jobs:
         run: |
           if [ ! -f settings.gradle.kts ]; then unzip -oq ./*.zip; fi
           echo "DIR=$(dirname "$(find . -name settings.gradle.kts | head -1)")" >> "$GITHUB_ENV"
+      - name: Server manzilini yozish
+        run: echo "window.SERVER=\"${{ vars.SERVER_URL }}\";" > "$DIR/app/src/main/assets/config.js"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
