@@ -1,0 +1,27 @@
+name: APK yig'ish
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Loyiha papkasini topish (zip bo'lsa ochadi)
+        run: |
+          if [ ! -f settings.gradle.kts ]; then unzip -oq ./*.zip; fi
+          echo "DIR=$(dirname "$(find . -name settings.gradle.kts | head -1)")" >> "$GITHUB_ENV"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+      - name: APK yig'ish
+        working-directory: ${{ env.DIR }}
+        run: gradle assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Musiqa-APK
+          path: "**/app/build/outputs/apk/debug/*.apk"
