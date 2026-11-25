@@ -22,7 +22,14 @@ jobs:
           gradle-version: "8.7"
       - name: APK yig'ish
         working-directory: ${{ env.DIR }}
-        run: gradle assembleDebug --no-daemon
+        run: gradle assembleDebug -PvCode=${{ github.run_number }} --no-daemon
+      - name: Serverga yuborish (ilova o'zi yangilanishi uchun)
+        env:
+          PK: ${{ secrets.PUSH_KEY }}
+          SU: ${{ vars.SERVER_URL }}
+        run: |
+          APK=$(find . -path '*apk/debug/*.apk' | head -1)
+          if [ -n "$PK" ] && [ -n "$SU" ]; then curl -sSf -H "X-Key: $PK" -F "apk=@$APK" -F "code=${{ github.run_number }}" -F "name=v${{ github.run_number }}" "$SU/api.php?a=pushapk"; else echo "PUSH_KEY/SERVER_URL yo'q — o'tkazib yuborildi"; fi
       - uses: actions/upload-artifact@v4
         with:
           name: Musiqa-APK
